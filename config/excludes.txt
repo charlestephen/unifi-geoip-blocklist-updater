@@ -1,0 +1,9 @@
+# IPs/CIDRs to exclude from geo-blocklists (whitelist)
+# One entry per line. Lines starting with # are comments.
+# Use this to whitelist specific IPs or ranges within blocked countries.
+
+# Example: a specific server in a blocked country you need access to
+# 203.0.113.50
+
+# Example: a CIDR range to exclude
+# 198.51.100.0/24
