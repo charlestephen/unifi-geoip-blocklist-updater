@@ -276,11 +276,18 @@ func loadBlocks(csvDir, filename string, locations map[int]string, wantCountries
 		}
 
 		// Validate CIDR
-		if _, _, err := net.ParseCIDR(network); err != nil {
+		_, ipNet, err := net.ParseCIDR(network)
+		if err != nil {
 			continue
 		}
 
-		cidrs = append(cidrs, network)
+		// UniFi rejects /32 and /128 — use plain IP for single-host entries
+		ones, bits := ipNet.Mask.Size()
+		if ones == bits {
+			cidrs = append(cidrs, ipNet.IP.String())
+		} else {
+			cidrs = append(cidrs, network)
+		}
 	}
 
 	return cidrs, nil
