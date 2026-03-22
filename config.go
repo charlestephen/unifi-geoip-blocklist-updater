@@ -68,16 +68,21 @@ func ParseConfig() Config {
 		}
 	}
 
+	// Trim whitespace from critical fields (catches stray quotes/spaces in .env)
+	cfg.MaxMindKey = strings.TrimSpace(cfg.MaxMindKey)
+	cfg.ControllerURL = strings.TrimSpace(cfg.ControllerURL)
+	cfg.APIKey = strings.TrimSpace(cfg.APIKey)
+
 	// Validate required fields
 	if cfg.MaxMindKey == "" {
-		log.Fatal("MaxMind license key required (-maxmind-key or MAXMIND_LICENSE_KEY env var)")
+		log.Fatal("MaxMind license key required: set MAXMIND_LICENSE_KEY in .env file or pass -maxmind-key flag")
 	}
 	if !cfg.DryRun {
 		if cfg.ControllerURL == "" {
-			log.Fatal("controller URL required (-url or UNIFI_URL env var)")
+			log.Fatal("controller URL required: set UNIFI_URL in .env file or pass -url flag")
 		}
 		if cfg.APIKey == "" {
-			log.Fatal("API key required (-api-key or UNIFI_API_KEY env var)")
+			log.Fatal("API key required: set UNIFI_API_KEY in .env file or pass -api-key flag")
 		}
 	}
 

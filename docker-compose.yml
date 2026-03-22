@@ -3,17 +3,8 @@ services:
     build: .
     container_name: unifi-geoip-blocklist-updater
     restart: unless-stopped
-    environment:
-      - MAXMIND_LICENSE_KEY=${MAXMIND_LICENSE_KEY}
-      - UNIFI_URL=${UNIFI_URL}
-      - UNIFI_API_KEY=${UNIFI_API_KEY}
-      - UNIFI_SITE=${UNIFI_SITE:-default}
-      - GROUP_PREFIX=${GROUP_PREFIX:-GeoBlock}
-      - CHUNK_SIZE=${CHUNK_SIZE:-10000}
-      - INTERVAL=${INTERVAL:-24h}
-      - DRY_RUN=${DRY_RUN:-false}
-      - INSECURE=${INSECURE:-false}
-      - TZ=${TZ:-UTC}
+    env_file:
+      - .env
     volumes:
       - ./config:/config:ro
       - geoip-data:/data

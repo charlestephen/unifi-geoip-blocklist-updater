@@ -4,3 +4,6 @@
 go.work
 go.work.sum
 .env
+.vscode/
+geoip-updater
+data/
