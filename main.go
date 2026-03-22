@@ -13,7 +13,7 @@ func main() {
 	log.Printf("  Countries file: %s", cfg.CountriesFile)
 	log.Printf("  Data dir: %s", cfg.DataDir)
 	log.Printf("  Prefix: %s, Chunk size: %d", cfg.GroupPrefix, cfg.ChunkSize)
-	log.Printf("  Interval: %s, Dry-run: %v", cfg.Interval, cfg.DryRun)
+	log.Printf("  Interval: %s, Dry-run: %v, Aggregate: %v", cfg.Interval, cfg.DryRun, cfg.Aggregate)
 	if !cfg.DryRun {
 		log.Printf("  UniFi: %s (site: %s)", cfg.ControllerURL, cfg.Site)
 	}
@@ -62,14 +62,25 @@ func runOnce(cfg Config) error {
 		log.Printf("after excludes: %d IPv4, %d IPv6", len(ipv4), len(ipv6))
 	}
 
-	// 4. Sort and chunk
+	// 4. Aggregate CIDRs (merge adjacent/overlapping blocks into supernets)
+	if cfg.Aggregate {
+		beforeV4, beforeV6 := len(ipv4), len(ipv6)
+		ipv4 = AggregateCIDRs(ipv4)
+		ipv6 = AggregateCIDRs(ipv6)
+		log.Printf("aggregated IPv4: %d → %d entries (%.1f%% reduction)",
+			beforeV4, len(ipv4), 100*(1-float64(len(ipv4))/float64(beforeV4)))
+		log.Printf("aggregated IPv6: %d → %d entries (%.1f%% reduction)",
+			beforeV6, len(ipv6), 100*(1-float64(len(ipv6))/float64(beforeV6)))
+	}
+
+	// 5. Sort and chunk
 	sortIPs(ipv4)
 	sortIPs(ipv6)
 	v4Chunks := chunkSlice(ipv4, cfg.ChunkSize)
 	v6Chunks := chunkSlice(ipv6, cfg.ChunkSize)
 	log.Printf("chunked into %d IPv4 group(s), %d IPv6 group(s)", len(v4Chunks), len(v6Chunks))
 
-	// 5. Dry-run: print summary and return
+	// 6. Dry-run: print summary and return
 	if cfg.DryRun {
 		for i, chunk := range v4Chunks {
 			fmt.Printf("%s%d: %d entries (first: %s, last: %s)\n",
@@ -83,7 +94,7 @@ func runOnce(cfg Config) error {
 		return nil
 	}
 
-	// 6. Sync to UniFi
+	// 7. Sync to UniFi
 	client := NewUniFiClient(cfg.ControllerURL, cfg.APIKey, cfg.Site, cfg.Insecure)
 
 	if len(v4Chunks) > 0 {

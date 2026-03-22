@@ -26,6 +26,7 @@ type Config struct {
 	Interval      time.Duration
 	DryRun        bool
 	Insecure      bool
+	Aggregate     bool
 }
 
 // ParseConfig reads configuration from flags and environment variables.
@@ -46,6 +47,7 @@ func ParseConfig() Config {
 	flag.StringVar(&intervalStr, "interval", "24h", "time between update cycles (e.g. 24h, 12h)")
 	flag.BoolVar(&cfg.DryRun, "dry-run", false, "download and parse but don't push to controller")
 	flag.BoolVar(&cfg.Insecure, "insecure", false, "skip TLS certificate verification")
+	flag.BoolVar(&cfg.Aggregate, "aggregate", true, "merge adjacent CIDRs into supernets to reduce group count")
 	flag.Parse()
 
 	// Env var fallbacks
@@ -60,6 +62,7 @@ func ParseConfig() Config {
 	envFallbackDuration(&cfg.Interval, intervalStr, "INTERVAL")
 	envFallbackBool(&cfg.DryRun, "DRY_RUN")
 	envFallbackBool(&cfg.Insecure, "INSECURE")
+	envFallbackBoolDefault(&cfg.Aggregate, "AGGREGATE", true)
 
 	if v := os.Getenv("CHUNK_SIZE"); v != "" && cfg.ChunkSize == 10000 {
 		var n int
@@ -115,6 +118,14 @@ func envFallbackBool(field *bool, envKey string) {
 	if !*field {
 		v := strings.ToLower(os.Getenv(envKey))
 		*field = v == "true" || v == "1" || v == "yes"
+	}
+}
+
+// envFallbackBoolDefault handles bools that default to true — env can disable them.
+func envFallbackBoolDefault(field *bool, envKey string, defaultVal bool) {
+	if v := os.Getenv(envKey); v != "" {
+		lower := strings.ToLower(v)
+		*field = lower == "true" || lower == "1" || lower == "yes"
 	}
 }
 
