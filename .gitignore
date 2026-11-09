@@ -7,3 +7,7 @@ go.work.sum
 .vscode/
 geoip-updater
 data/
+
+# Local tooling and OS files
+.gitignore
+.gitguardian*
