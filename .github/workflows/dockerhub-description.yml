@@ -1,0 +1,30 @@
+name: Docker Hub overview
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/dockerhub.md
+      - .github/workflows/dockerhub-description.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  description:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Update Docker Hub overview
+        continue-on-error: true
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/unifi-geoip-blocklist-updater
+          short-description: Keeps UniFi firewall address groups in sync with GeoIP country data from MaxMind.
+          readme-filepath: docs/dockerhub.md
