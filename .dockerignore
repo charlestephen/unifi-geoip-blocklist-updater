@@ -1,0 +1,10 @@
+.git
+.github
+.env
+.env.*
+data
+config
+docs
+*.md
+compose.yml
+geoip-updater

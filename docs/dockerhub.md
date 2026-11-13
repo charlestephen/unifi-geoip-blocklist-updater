@@ -23,14 +23,13 @@ You still need to create the firewall rules that use these groups in UniFi.
 
 ## Tags
 
-The image is currently published per architecture:
+Images are multi-arch (`linux/amd64` and `linux/arm64`), so one tag works on either.
 
-| Tag | Architecture |
+| Tag | Meaning |
 |---|---|
-| `latest.amd64` | x86-64 |
-| `latest.arm64` | ARM64 |
-
-Pick the tag that matches your host. There is no combined `latest` tag.
+| `latest` | Most recent build of `main`. |
+| `<version>`, `<major>.<minor>` | A tagged release. |
+| `sha-<commit>` | The image built from that commit. |
 
 ## Quick start
 
@@ -70,7 +69,7 @@ docker run --rm \
   -e MAXMIND_LICENSE_KEY=your-maxmind-license-key \
   -v "$PWD/config:/config:ro" \
   -v geoip-data:/data \
-  charlestephen/unifi-geoip-blocklist-updater:latest.amd64 -dry-run
+  charlestephen/unifi-geoip-blocklist-updater:latest -dry-run
 ```
 
 Then run it for real:
@@ -80,10 +79,10 @@ docker run -d --name unifi-geoip-blocklist-updater --restart unless-stopped \
   --env-file .env \
   -v "$PWD/config:/config:ro" \
   -v geoip-data:/data \
-  charlestephen/unifi-geoip-blocklist-updater:latest.amd64
+  charlestephen/unifi-geoip-blocklist-updater:latest
 ```
 
-Use `latest.arm64` on an ARM host. Watch the first cycle:
+Watch the first cycle:
 
 ```bash
 docker logs -f unifi-geoip-blocklist-updater
@@ -92,7 +91,7 @@ docker logs -f unifi-geoip-blocklist-updater
 To update:
 
 ```bash
-docker pull charlestephen/unifi-geoip-blocklist-updater:latest.amd64
+docker pull charlestephen/unifi-geoip-blocklist-updater:latest
 docker rm -f unifi-geoip-blocklist-updater
 # then run the docker run command above again
 ```
@@ -102,7 +101,7 @@ docker rm -f unifi-geoip-blocklist-updater
 ```yaml
 services:
   geoip-updater:
-    image: charlestephen/unifi-geoip-blocklist-updater:latest.amd64
+    image: charlestephen/unifi-geoip-blocklist-updater:latest
     container_name: unifi-geoip-blocklist-updater
     restart: unless-stopped
     env_file:

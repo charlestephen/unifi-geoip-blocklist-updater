@@ -143,9 +143,9 @@ func extractCSVFiles(zipPath, destDir string) error {
 
 	// Files we need (by basename)
 	wanted := map[string]bool{
-		"GeoLite2-Country-Blocks-IPv4.csv":   true,
-		"GeoLite2-Country-Blocks-IPv6.csv":   true,
-		"GeoLite2-Country-Locations-en.csv":   true,
+		"GeoLite2-Country-Blocks-IPv4.csv":  true,
+		"GeoLite2-Country-Blocks-IPv6.csv":  true,
+		"GeoLite2-Country-Locations-en.csv": true,
 	}
 
 	extracted := 0
@@ -189,7 +189,8 @@ func extractZipFile(f *zip.File, destPath string) error {
 // loadLocations parses GeoLite2-Country-Locations-en.csv and returns
 // a map of geoname_id → country_iso_code.
 // CSV columns: geoname_id, locale_code, continent_code, continent_name,
-//              country_iso_code, country_name, is_in_european_union
+//
+//	country_iso_code, country_name, is_in_european_union
 func loadLocations(csvDir string) (map[int]string, error) {
 	path := filepath.Join(csvDir, "GeoLite2-Country-Locations-en.csv")
 	f, err := os.Open(path)
@@ -236,8 +237,9 @@ func loadLocations(csvDir string) (map[int]string, error) {
 // loadBlocks parses a GeoLite2-Country-Blocks CSV file and returns CIDRs
 // belonging to the specified countries.
 // CSV columns: network, geoname_id, registered_country_geoname_id,
-//              represented_country_geoname_id, is_anonymous_proxy,
-//              is_satellite_provider, is_anycast
+//
+//	represented_country_geoname_id, is_anonymous_proxy,
+//	is_satellite_provider, is_anycast
 func loadBlocks(csvDir, filename string, locations map[int]string, wantCountries map[string]bool) ([]string, error) {
 	path := filepath.Join(csvDir, filename)
 	f, err := os.Open(path)

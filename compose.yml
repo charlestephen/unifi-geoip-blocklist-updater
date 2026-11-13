@@ -1,6 +1,10 @@
 services:
   geoip-updater:
-    build: .
+    image: ghcr.io/charlestephen/unifi-geoip-blocklist-updater:latest
+    # To build from source instead, drop `image:` and use:
+    #   build:
+    #     context: .
+    #     dockerfile: Containerfile
     container_name: unifi-geoip-blocklist-updater
     restart: unless-stopped
     env_file:
