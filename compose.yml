@@ -1,6 +1,6 @@
 services:
   geoip-updater:
-    image: ghcr.io/charlestephen/unifi-geoip-blocklist-updater:latest
+    image: ghcr.io/charlestephen/unifi-geoip-blocklist-updater:latest@sha256:d4862d358891fcd4ab3644d6e1a2d54604d94058a565647575e21b19c56040c6
     # To build from source instead, drop `image:` and use:
     #   build:
     #     context: .
